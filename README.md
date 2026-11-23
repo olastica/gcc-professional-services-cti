@@ -13,7 +13,7 @@ This is an intelligence-led threat assessment for a professional services firm i
 ## Key findings
 
 - **Two ransomware groups have hit the sector in Qatar.** In the last 12 months, The Gentlemen claimed a Qatari design consultancy and Payload claimed a Qatari law firm.
-- **The Gentlemen disables security tools before encrypting.** Its EDR killer abuses vulnerable signed drivers that are not yet listed in public blocklists, so behavioural detection matters most.
+- **The Gentlemen disables security tools before encrypting.** Its EDR killer abuses vulnerable signed Safetica and Lenovo drivers. The driver versions are already catalogued in LOLDrivers, but the hashes Acronis reported are new, so hash blocking alone won't stop it and behavioural detection matters most.
 - **MuddyWater's Operation Olalampo is active.** The Iranian state actor's campaign uses new malware (CHAR, GhostFetch, HTTP_VIP) and DLL sideloading through a legitimate binary. Two of its C2 domains were still live on 22 November 2026.
 - **Detection content is ready.** The repo holds 72 indicators tiered by confidence, 20 Sigma rules with Defender KQL equivalents, a YARA rule and a STIX 2.1 bundle. 25 unique ATT&CK techniques are mapped.
 
@@ -77,6 +77,13 @@ This project uses **ATT&CK v19** (April 2026). In v19, *Defense Evasion* was spl
 ## Internal deliverables (not published)
 
 This project also produced a *Threat Intelligence – SOC Handover Report* and an internal version of the Threat Intelligence Register, which were delivered to the organisation's SOC team. They contain internal organisational information and are withheld for confidentiality. All intelligence findings, indicators and detection content in this repository are reproduced from public sources in sanitised form.
+
+## Community contributions
+
+While validating The Gentlemen's vulnerable drivers, I found that both driver versions reported by Acronis TRU (Lenovo BootRepair.sys 2.5.30.11281 and Safetica STProcessMonitor 11.26.18) are already catalogued in [LOLDrivers](https://www.loldrivers.io/), but the two driver hashes Acronis published are not. As far as I could find, Acronis is also the first public source linking BootRepair.sys to The Gentlemen. I reported this to the LOLDrivers project:
+
+- Issue [#504](https://github.com/magicsword-io/LOLDrivers/issues/504): the two new hashes, proposed as context only (no samples are public) — *Status: open*
+- Pull request [#505](https://github.com/magicsword-io/LOLDrivers/pull/505): adds the Acronis report as a reference to both driver entries — *Status: open, awaiting review*
 
 ## Disclaimer
 

@@ -7,8 +7,11 @@ description: |
   abused to terminate security tools from kernel mode (BYOVD).
 references:
   - https://www.acronis.com/en/tru/posts/the-gentlemen-a-closer-look-at-a-not-so-gentle-ransomware-as-a-service-operation/
+  - https://www.loldrivers.io/drivers/0712c54c-69fd-41f2-950a-da678ac51246/
+  - https://www.loldrivers.io/drivers/7cc0a40d-7902-4400-9fc4-0070053991cb/
 author: Olasunkanmi Ogidan
 date: 2026-11-21
+modified: 2026-11-23
 tags:
   - attack.defense-impairment   # ATT&CK v19 (Apr 2026): replaces defense-evasion for disabling tools
   - attack.t1685                # T1685 Disable or Modify Tools (replaces revoked T1562.001)
@@ -24,6 +27,9 @@ detection:
       - 'PhantomKiller'
       - 'BootRepair'
       - 'ProcessMonitorDriver'
+  selection_clone:   # Acronis-reported dropped-driver naming: <name>_clone_NN_<hex>.sys
+    ImageLoaded|contains: '_clone_'
+    ImageLoaded|endswith: '.sys'
   selection_hash:
     Hashes|contains:
       - 'SHA256=A974A9F097BC2E26F285560F1454C70710C88C30C0AE1EDFA2977AD862C56716'
