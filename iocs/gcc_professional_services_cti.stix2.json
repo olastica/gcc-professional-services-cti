@@ -1682,7 +1682,7 @@
             "created": "2026-11-23T18:47:16.165898Z",
             "modified": "2026-11-23T18:47:16.165898Z",
             "name": "CTI-0024 File Hash (SHA-256): The Gentlemen RaaS (Storm-2697 / GOLD SHERWOOD) \u2013 Vulnerable driver (BYOVD)",
-            "description": "Reported, unverified: matches Acronis exactly but absent from VirusTotal, LOLDrivers and public web. Single source; samples from incident response.",
+            "description": "Acronis only; not on VirusTotal. Same driver versions are in LOLDrivers, but these hashes are new; reported to LOLDrivers (issue #504).",
             "indicator_types": [
                 "malicious-activity"
             ],
@@ -1715,7 +1715,7 @@
             "created": "2026-11-23T18:47:16.167084Z",
             "modified": "2026-11-23T18:47:16.167084Z",
             "name": "CTI-0025 File Hash (SHA-256): The Gentlemen RaaS (Storm-2697 / GOLD SHERWOOD) \u2013 Vulnerable driver (BYOVD)",
-            "description": "Reported, unverified: matches Acronis exactly but absent from VirusTotal, LOLDrivers and public web. Single source; samples from incident response.",
+            "description": "Acronis only; not on VirusTotal. Same driver versions are in LOLDrivers, but these hashes are new; reported to LOLDrivers (issue #504).",
             "indicator_types": [
                 "malicious-activity"
             ],

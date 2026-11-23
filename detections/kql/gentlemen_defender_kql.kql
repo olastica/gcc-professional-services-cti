@@ -10,6 +10,7 @@
 DeviceEvents
 | where ActionType == "DriverLoad"
 | where FileName matches regex @"(?i)STProcessMonitor|PhantomKiller|BootRepair|ProcessMonitorDriver"
+    or FileName matches regex @"(?i)_clone_.*\.sys$"   // Acronis-reported naming pattern
     or SHA256 in~ ("a974a9f097bc2e26f285560f1454c70710c88c30c0ae1edfa2977ad862c56716",
                    "dfdc8313921c0f594ee1cd41ff7ef73d973c667438c2dfe5c38cafdbba10defb")
 | project Timestamp, DeviceName, FileName, FolderPath, SHA256, InitiatingProcessFileName, InitiatingProcessCommandLine

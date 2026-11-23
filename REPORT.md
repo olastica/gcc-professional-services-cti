@@ -14,7 +14,7 @@
 
 - **Two ransomware groups have hit the sector in Qatar.** In the last 12 months, **The Gentlemen** claimed a Qatari design consultancy and **Payload** claimed a Qatari law firm. Professional services made up 22% of claimed ransomware victims in Qatar, tied for the most-targeted sector.
 - **The ransomware threat has diversified.** Seven groups claimed Qatari victims in the last year, compared with a single group (Qilin) in 2025.
-- **The Gentlemen disables security tools before encrypting.** Its EDR killer abuses vulnerable signed drivers that are not yet publicly catalogued, so blocklists alone will not stop it and behavioural detection is essential.
+- **The Gentlemen disables security tools before encrypting.** Its EDR killer abuses vulnerable signed Safetica and Lenovo drivers. The driver versions are catalogued in LOLDrivers, but the hashes Acronis reported are new and Microsoft's blocklist coverage is unconfirmed, so hash blocking alone will not stop it and behavioural detection is essential.
 - **MuddyWater's Operation Olalampo is active.** The Iranian state actor's MENA campaign uses new malware (CHAR, GhostFetch, HTTP_VIP) and DLL sideloading through a legitimate audio binary. **Two of its C2 domains were still live on 22 November 2026**, and this assessment linked its domains, malware and C2 server into a single verified chain.
 - **Detection content is ready for the SOC.** 72 indicators tiered by confidence, 20 validated Sigma rules with Microsoft Defender KQL equivalents, a custom YARA rule and a STIX 2.1 bundle. 25 unique ATT&CK v19 techniques were mapped across the three actors (30 actor-technique pairs), and 19 of those pairs are covered by the delivered rules.
 
@@ -138,7 +138,7 @@ Cyble's September 2026 reporting independently confirms The Gentlemen, Everest, 
 
 **Why it matters.** The group is mature, generous to affiliates (up to 90% of ransom revenue) and has already hit a Qatari professional services firm. Its EDR-killing step means endpoint protection alone cannot be relied on.
 
-**What this assessment found.** Two samples were fully validated and 16 corroborated. Vendor labels show the encryptor **evolving during 2026** — from variant ".B" (first seen April 2026) to ".D" (July 2026), with all 16 bulk-checked samples being ".D". The EDR-killer and driver hashes published by Acronis could not be found on VirusTotal or LOLDrivers, which means the drivers are not yet catalogued publicly and are unlikely to be on Microsoft's vulnerable-driver blocklist. Behavioural detection is therefore the primary control (Section 8).
+**What this assessment found.** Two samples were fully validated and 16 corroborated. Vendor labels show the encryptor **evolving during 2026** — from variant ".B" (first seen April 2026) to ".D" (July 2026), with all 16 bulk-checked samples being ".D". The EDR-killer and driver hashes published by Acronis could not be found on VirusTotal. The two drivers themselves are not new: LOLDrivers already lists Safetica STProcessMonitor 11.26.18 (added from ESET's Gentlemen research) and Lenovo BootRepair.sys 2.5.30.11281 — the same versions Acronis reports — but under different hashes. The Acronis copies, named in a `<name>_clone_NN_<hex>.sys` pattern, may be modified copies or different builds; this cannot be confirmed without samples. As far as this assessment found, Acronis is the first public source linking BootRepair.sys to The Gentlemen. Safetica states that Microsoft agreed to add 11.26.18 to its vulnerable-driver blocklist from 15 November 2026, but calls the date indicative; this is not independently confirmed, and BootRepair coverage is unknown. Behavioural detection is therefore the primary control (Section 8). The two new hashes and the Acronis reference were submitted to LOLDrivers (issue #504, pull request #505).
 
 ### 4.3 MuddyWater — Operation Olalampo
 
@@ -448,7 +448,7 @@ None of the content has been tested in a lab against live malware. All rules are
 
 ### 8.4 Hardening recommendations
 
-1. **Turn on the Defender attack surface reduction (ASR) rules** *Block abuse of exploited vulnerable signed drivers* and *Block all Office applications from creating child processes*. The first may not yet cover The Gentlemen's drivers, which are not publicly catalogued, so keep the behavioural driver rule in place.
+1. **Turn on the Defender attack surface reduction (ASR) rules** *Block abuse of exploited vulnerable signed drivers* and *Block all Office applications from creating child processes*. Microsoft's blocklist coverage of The Gentlemen's drivers is unconfirmed (Safetica 11.26.18 is reportedly being added from 15 November 2026; BootRepair is unknown), so keep the behavioural driver rule in place. To check, download the current policy from aka.ms/VulnerableDriverBlockList and search it for `BootRepair` and `ProcessMonitor`.
 2. **Block macros in Office files from the internet** via Group Policy. This breaks the opening step of the Olalampo chain.
 3. **Restrict remote access tools.** Allow only approved RMM software and block AnyDesk where there is no business need, removing a tool used by both The Gentlemen and MuddyWater.
 4. **Block Telegram's API at the proxy** if there is no business requirement.
@@ -490,7 +490,7 @@ Sources were treated as independent only when they did not derive from each othe
 |---|---|
 | HTTP_VIP's custom HTTP headers are unconfirmed | Confirm through a controlled sandbox run or published reverse engineering, then build a proxy detection |
 | Spectral Kitten and Famous Chollima targeting rests on press coverage | Obtain the CrowdStrike 2026 Threat Hunting Report and verify the claims at source |
-| The Gentlemen's EDR-killer and driver samples are not public | Monitor VirusTotal and LOLDrivers; a submission to LOLDrivers citing Acronis is planned |
+| The Gentlemen's EDR-killer and driver samples are not public, and the hash-to-driver mapping is unpublished | Monitor VirusTotal and LOLDrivers issue #504 / pull request #505 (submitted 23 November 2026); confirm Microsoft blocklist coverage |
 | First-seen dates missing for bulk-checked hashes | Capture VirusTotal first-submission dates in the next review cycle |
 | Three Group-IB hashes not found on VirusTotal | Check MalwareBazaar and other repositories |
 | New MuddyWater infrastructure | Hunt for newly registered domains matching the Namecheap, privacy-WHOIS and Cloudflare pattern, and monitor `promoverse[.]org` around its 21 December 2026 expiry |
@@ -531,6 +531,7 @@ All sources are public. Accessed November 2026.
 
 **The Gentlemen**
 - Acronis Threat Research Unit — [The Gentlemen: a closer look at a not-so-gentle ransomware-as-a-service operation](https://www.acronis.com/en/tru/posts/the-gentlemen-a-closer-look-at-a-not-so-gentle-ransomware-as-a-service-operation/)
+- LOLDrivers — [Safetica STProcessMonitor entry](https://www.loldrivers.io/drivers/0712c54c-69fd-41f2-950a-da678ac51246/), [Lenovo BootRepair.sys entry](https://www.loldrivers.io/drivers/7cc0a40d-7902-4400-9fc4-0070053991cb/); project submissions [issue #504](https://github.com/magicsword-io/LOLDrivers/issues/504) and [pull request #505](https://github.com/magicsword-io/LOLDrivers/pull/505)
 - Microsoft Threat Intelligence — [The Gentlemen ransomware](https://www.microsoft.com/en-us/security/blog/?p=147677)
 - Trend Micro — [Unmasking The Gentlemen ransomware](https://www.trendmicro.com/en_gb/research/25/i/unmasking-the-gentlemen-ransomware.html)
 - Sophos Counter Threat Unit — [GOLD SHERWOOD threat profile](https://www.sophos.com/en-us/threat-profiles/gold-sherwood)
