@@ -1,0 +1,79 @@
+// =====================================================================
+// MuddyWater (Operation Olalampo) - KQL for Microsoft Defender XDR Advanced Hunting
+// (also runs in Sentinel if the Defender XDR connector streams Device* tables)
+// Source Sigma rules: muddywater_*.yml
+// Status: experimental - 22 Nov 2026. Rules 1-8 auto-converted (pySigma kusto, microsoft_xdr);
+//         rules 9-11 and IOC queries 12-13 hand-written. NOT tested in a live tenant.
+// =====================================================================
+
+// [MW-1] FMAPP.dll sideloaded by FMAPP.exe outside legitimate path | T1574.001
+DeviceImageLoadEvents
+| where (InitiatingProcessFolderPath endswith "\\FMAPP.exe" and FolderPath endswith "\\FMAPP.dll")
+    and (not((FolderPath startswith "C:\\Program Files\\" or FolderPath startswith "C:\\Program Files (x86)\\" or FolderPath startswith "C:\\Windows\\System32\\DriverStore\\")))
+
+// [MW-2] FMAPP.exe executed from user-writable location | T1574.001
+DeviceProcessEvents
+| where FolderPath endswith "\\FMAPP.exe" and (FolderPath contains "\\Users\\" or FolderPath contains "\\ProgramData\\" or FolderPath contains "\\Temp\\")
+
+// [MW-3] Payload dropped to known Olalampo staging/persistence path | T1547.001, T1204.002
+DeviceFileEvents
+| where FolderPath contains "\\AppData\\Local\\Microsoft\\Windows\\BurnUtill\\"
+    or (FolderPath endswith "\\Users\\Public\\Documents\\MicrosoftExcelUser.exe" or FolderPath endswith "\\Users\\Public\\Downloads\\novaservice.exe" or FolderPath endswith "\\MicrosoftWordUser.exe")
+    or FolderPath contains "\\AppData\\SystemApps\\"
+
+// [MW-4] Executable launched from payload path or with .log extension | T1204.002
+DeviceProcessEvents
+| where (FolderPath contains "\\AppData\\Local\\Microsoft\\Windows\\BurnUtill\\" or FolderPath contains "\\AppData\\SystemApps\\")
+    or (FolderPath endswith "\\Users\\Public\\Documents\\MicrosoftExcelUser.exe" or FolderPath endswith "\\Users\\Public\\Downloads\\novaservice.exe" or FolderPath endswith "\\MicrosoftWordUser.exe")
+    or FileName endswith ".log"
+
+// [MW-5] Word/Excel spawns process from Public or AppData payload folder | T1566.001, T1204.002
+DeviceProcessEvents
+| where (InitiatingProcessFolderPath endswith "\\WINWORD.EXE" or InitiatingProcessFolderPath endswith "\\EXCEL.EXE")
+    and (FolderPath contains "\\Users\\Public\\" or FolderPath contains "\\AppData\\SystemApps\\" or FolderPath contains "\\AppData\\Local\\Microsoft\\Windows\\BurnUtill\\")
+
+// [MW-6] User Shell Folders Startup path modified | T1547.001
+DeviceRegistryEvents
+| where RegistryKey endswith "\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\\Startup"
+
+// [MW-7] DailyUpdate scheduled task running novaservice (CHAR) | T1053.005
+DeviceProcessEvents
+| where ProcessCommandLine contains "DailyUpdate" and ProcessCommandLine contains "novaservice"
+
+// [MW-8] GhostBackDoor MicrosoftVersionUpdater service created | T1543.003
+DeviceRegistryEvents
+| where RegistryKey contains "\\SYSTEM\\CurrentControlSet\\Services\\MicrosoftVersionUpdater"
+
+// [MW-9] Connection to known Olalampo C2 domains (HAND-WRITTEN) | T1071.001
+//    codefusiontech + promoverse active Nov 2026; miniquest + jerusalemsolutions for retro-hunt
+DeviceNetworkEvents
+| where RemoteUrl has_any ("codefusiontech.org", "promoverse.org", "miniquest.org", "jerusalemsolutions.com")
+| project Timestamp, DeviceName, InitiatingProcessFileName, InitiatingProcessCommandLine, RemoteUrl, RemoteIP, RemotePort
+
+// [MW-10] C2 URL paths (HAND-WRITTEN) - only visible where full URLs are logged (proxy / TLS inspection)
+//     Sentinel ASIM alternative (auto-converted): imWebSession | where HttpHost endswith ... and Url contains ...
+DeviceNetworkEvents
+| where RemoteUrl has_any ("codefusiontech.org", "promoverse.org")
+| where RemoteUrl has_any ("/api/debut", "/api/authentification/connexion", "/api/accueil/etat", "/postinfo", "/content?id=", "/FMAPP.dll")
+
+// [MW-11] Telegram Bot API from non-browser process - CHAR backdoor pattern (HAND-WRITTEN) | T1102.002
+DeviceNetworkEvents
+| where RemoteUrl has "api.telegram.org"
+| where InitiatingProcessFileName !in~ ("chrome.exe", "msedge.exe", "firefox.exe", "telegram.exe")
+| project Timestamp, DeviceName, InitiatingProcessFileName, InitiatingProcessFolderPath, InitiatingProcessCommandLine, RemoteUrl
+
+// [MW-12] IOC sweep - validated C2 IP (origin server / FMAPP.dll C2). Short review date: hosting IP may be reassigned.
+DeviceNetworkEvents
+| where RemoteIP == "162.0.230.185"
+| project Timestamp, DeviceName, InitiatingProcessFileName, InitiatingProcessCommandLine, RemoteIP, RemotePort, RemoteUrl
+
+// [MW-13] IOC sweep - fully validated file hashes (CTI-0038 to CTI-0041). Add Tier A/B SHA-1s from the IOC list as needed.
+let mw_sha256 = dynamic([
+  "8d2227f2c53d7e22a57e12c45cecdd43dbec08dbc3ab93e74e6df52cdf80548b",  // burn.exe (GhostFetch)
+  "3a19c19d9f3bac6628a968110477ee01e5867b2534e914e1be5c4485947bd819",  // GhostFetch sibling
+  "3fa148e2d3fb86cecc15c276c5329496beba9aba14a6024b561efabf2e4e68af",  // FMAPP.dll
+  "1b9e6fe4b03285b2e768c57e320d84323ac9167598395918d56a12e568b0009a"   // pic.log (HTTP_VIP)
+]);
+union DeviceFileEvents, DeviceProcessEvents, DeviceImageLoadEvents
+| where SHA256 in~ (mw_sha256)
+| project Timestamp, DeviceName, ActionType, FileName, FolderPath, SHA256

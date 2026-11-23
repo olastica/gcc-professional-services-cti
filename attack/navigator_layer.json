@@ -1,0 +1,479 @@
+{
+ "name": "GCC professional services threats (Payload, The Gentlemen, MuddyWater)",
+ "versions": {
+  "attack": "19",
+  "navigator": "5.1.0",
+  "layer": "4.5"
+ },
+ "domain": "enterprise-attack",
+ "description": "Techniques used by Payload, The Gentlemen and MuddyWater (Operation Olalampo), Dec 2025 - Nov 2026. Score = number of actors using the technique. Comments list the project Sigma rule IDs covering each technique. Author: Olasunkanmi Ogidan. TLP:CLEAR.",
+ "sorting": 3,
+ "layout": {
+  "layout": "side",
+  "aggregateFunction": "average",
+  "showID": true,
+  "showName": true,
+  "showAggregateScores": false,
+  "countUnscored": false
+ },
+ "hideDisabled": false,
+ "techniques": [
+  {
+   "techniqueID": "T1048",
+   "score": 1,
+   "comment": "The Gentlemen: rule 98e30ea3",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "The Gentlemen"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "Yes"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1053.005",
+   "score": 2,
+   "comment": "The Gentlemen: rule a8840838, 3f0eff16; MuddyWater: rule fb691629",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "The Gentlemen, MuddyWater"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "Yes"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1059.001",
+   "score": 2,
+   "comment": "The Gentlemen: rule 07a78679; MuddyWater: no rule",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "The Gentlemen, MuddyWater"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "Yes"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1068",
+   "score": 1,
+   "comment": "The Gentlemen: rule e9f35823",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "The Gentlemen"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "Yes"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1070",
+   "score": 1,
+   "comment": "Payload: no rule",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "Payload"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "No"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1071.001",
+   "score": 1,
+   "comment": "MuddyWater: rule 1eddb10d, 01ce12f7",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "MuddyWater"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "Yes"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1087.002",
+   "score": 1,
+   "comment": "MuddyWater: no rule",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "MuddyWater"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "No"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1090",
+   "score": 1,
+   "comment": "MuddyWater: file hashes only",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "MuddyWater"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "No"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1102.002",
+   "score": 1,
+   "comment": "MuddyWater: rule 587eb1b0",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "MuddyWater"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "Yes"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1105",
+   "score": 1,
+   "comment": "MuddyWater: rule 01ce12f7",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "MuddyWater"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "Yes"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1204.002",
+   "score": 1,
+   "comment": "MuddyWater: rule 788f57a3, ed62d9cf",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "MuddyWater"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "Yes"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1219",
+   "score": 2,
+   "comment": "The Gentlemen: rule 98e30ea3; MuddyWater: rule 98e30ea3",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "The Gentlemen, MuddyWater"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "Yes"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1480",
+   "score": 1,
+   "comment": "Payload: rule YARA Payload_Ransomware_Windows",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "Payload"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "Yes"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1484.001",
+   "score": 1,
+   "comment": "The Gentlemen: no rule",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "The Gentlemen"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "No"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1486",
+   "score": 2,
+   "comment": "Payload: rule afb482b2, a94db554; The Gentlemen: file hashes only",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "Payload, The Gentlemen"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "Yes"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1490",
+   "score": 1,
+   "comment": "Payload: rule c0f2e1db, b4214064",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "Payload"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "Yes"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1497.001",
+   "score": 1,
+   "comment": "MuddyWater: no rule",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "MuddyWater"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "No"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1518.001",
+   "score": 1,
+   "comment": "MuddyWater: no rule",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "MuddyWater"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "No"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1543.003",
+   "score": 1,
+   "comment": "MuddyWater: rule 541895e3",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "MuddyWater"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "Yes"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1547.001",
+   "score": 1,
+   "comment": "MuddyWater: rule 92a18ec6, f2d4e540",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "MuddyWater"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "Yes"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1555.003",
+   "score": 1,
+   "comment": "MuddyWater: file hashes only",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "MuddyWater"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "No"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1566.001",
+   "score": 1,
+   "comment": "MuddyWater: rule 788f57a3",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "MuddyWater"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "Yes"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1574.001",
+   "score": 1,
+   "comment": "MuddyWater: rule 65d75357, be390fef",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "MuddyWater"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "Yes"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1622",
+   "score": 1,
+   "comment": "MuddyWater: no rule",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "MuddyWater"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "No"
+    }
+   ],
+   "showSubtechniques": true
+  },
+  {
+   "techniqueID": "T1685",
+   "score": 2,
+   "comment": "Payload: no rule; The Gentlemen: rule e9f35823",
+   "enabled": true,
+   "metadata": [
+    {
+     "name": "Actors",
+     "value": "Payload, The Gentlemen"
+    },
+    {
+     "name": "Detection coverage",
+     "value": "Yes"
+    }
+   ],
+   "showSubtechniques": true
+  }
+ ],
+ "gradient": {
+  "colors": [
+   "#fce4d6",
+   "#f4a582",
+   "#b2182b"
+  ],
+  "minValue": 1,
+  "maxValue": 3
+ },
+ "legendItems": [
+  {
+   "label": "Used by 1 actor",
+   "color": "#fce4d6"
+  },
+  {
+   "label": "Used by 2 actors",
+   "color": "#f4a582"
+  },
+  {
+   "label": "Used by 3 actors",
+   "color": "#b2182b"
+  }
+ ],
+ "metadata": [
+  {
+   "name": "Source",
+   "value": "https://github.com/olastica/gcc-professional-services-cti"
+  }
+ ],
+ "showTacticRowBackground": false,
+ "selectTechniquesAcrossTactics": true,
+ "selectSubtechniquesWithParent": false
+}

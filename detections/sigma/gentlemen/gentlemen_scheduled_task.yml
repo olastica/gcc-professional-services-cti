@@ -1,0 +1,48 @@
+title: The Gentlemen Ransomware - gentlemen_system Scheduled Task
+id: a8840838-7c9f-4880-b920-31dad0771265
+status: experimental
+description: |
+  The Gentlemen deletes then recreates a scheduled task named "gentlemen_system" that runs the
+  ransomware with SYSTEM privileges and triggers it immediately.
+references:
+  - https://www.microsoft.com/en-us/security/blog/?p=147677
+author: Olasunkanmi Ogidan
+date: 2026-11-21
+tags:
+  - attack.persistence
+  - attack.execution
+  - attack.privilege-escalation
+  - attack.t1053.005
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    CommandLine|contains: 'gentlemen_system'
+  condition: selection
+falsepositives:
+  - None expected
+level: critical
+---
+title: The Gentlemen Ransomware - gentlemen_system Scheduled Task Created (Event 4698)
+id: 3f0eff16-e304-41a8-b1c4-88dd29662436
+status: experimental
+description: Catches the task even if created via API rather than schtasks.exe. Requires "Audit Other Object Access Events".
+references:
+  - https://www.microsoft.com/en-us/security/blog/?p=147677
+author: Olasunkanmi Ogidan
+date: 2026-11-21
+tags:
+  - attack.persistence
+  - attack.t1053.005
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4698
+    TaskName|contains: 'gentlemen_system'
+  condition: selection
+falsepositives:
+  - None expected
+level: critical

@@ -1,0 +1,34 @@
+title: The Gentlemen EDR Killer - Vulnerable Safetica/Lenovo Driver Loaded
+id: e9f35823-0d79-4a8c-9795-cc9391660599
+status: experimental
+description: |
+  Detects loading of the vulnerable drivers dropped by The Gentlemen EDR killer
+  (Safetica ProcessMonitorDriver v11.26.18 - CVE-2025-70795, and Lenovo BootRepair.sys v2.5.30.11281),
+  abused to terminate security tools from kernel mode (BYOVD).
+references:
+  - https://www.acronis.com/en/tru/posts/the-gentlemen-a-closer-look-at-a-not-so-gentle-ransomware-as-a-service-operation/
+author: Olasunkanmi Ogidan
+date: 2026-11-21
+tags:
+  - attack.defense-impairment   # ATT&CK v19 (Apr 2026): replaces defense-evasion for disabling tools
+  - attack.t1685                # T1685 Disable or Modify Tools (replaces revoked T1562.001)
+  - attack.privilege-escalation
+  - attack.t1068
+logsource:
+  product: windows
+  category: driver_load   # Sysmon Event ID 6
+detection:
+  selection_name:
+    ImageLoaded|contains:
+      - 'STProcessMonitor'
+      - 'PhantomKiller'
+      - 'BootRepair'
+      - 'ProcessMonitorDriver'
+  selection_hash:
+    Hashes|contains:
+      - 'SHA256=A974A9F097BC2E26F285560F1454C70710C88C30C0AE1EDFA2977AD862C56716'
+      - 'SHA256=DFDC8313921C0F594EE1CD41FF7EF73D973C667438C2DFE5C38CAFDBBA10DEFB'
+  condition: 1 of selection_*
+falsepositives:
+  - Legitimate Safetica DLP or Lenovo repair tooling (confirm with IT; should not exist in this environment)
+level: high

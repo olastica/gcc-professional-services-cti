@@ -1,0 +1,25 @@
+// =====================================================================
+// Payload ransomware - KQL for Microsoft Defender XDR Advanced Hunting
+// (also runs in Sentinel if the Defender XDR connector streams Device* tables)
+// Source Sigma rules: payload_shadow_copy_deletion.yml, payload_file_artifacts.yml
+// Status: experimental - auto-converted 22 Nov 2026 (pySigma kusto, microsoft_xdr), NOT tested in a live tenant
+// =====================================================================
+
+// [PL-1] Shadow copy deletion spawned by the "--background" relaunch (Payload-specific) | T1490
+DeviceProcessEvents
+| where (FolderPath endswith "\\cmd.exe" and (ProcessCommandLine contains "vssadmin" and ProcessCommandLine contains "delete shadows"))
+    and InitiatingProcessCommandLine endswith "--background"
+
+// [PL-2] Shadow copy deletion via vssadmin (generic, any ransomware) | T1490
+DeviceProcessEvents
+| where ProcessCommandLine contains "vssadmin" and ProcessCommandLine contains "delete"
+    and ProcessCommandLine contains "shadows" and ProcessCommandLine contains "/all"
+
+// [PL-3] C:\payload.log or Payload ransom note created | T1486
+DeviceFileEvents
+| where FolderPath =~ "C:\\payload.log"
+    or (FolderPath endswith "\\RECOVER_payload.txt" or FolderPath endswith "\\RECOVERY-xx0001.txt")
+
+// [PL-4] Files with .payload extension (encryption in progress) | T1486
+DeviceFileEvents
+| where FolderPath endswith ".payload"

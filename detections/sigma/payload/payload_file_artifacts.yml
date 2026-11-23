@@ -1,0 +1,51 @@
+title: Payload Ransomware - Execution Log and Ransom Note Created
+id: afb482b2-891f-438a-9f25-b03e0aba5827
+status: experimental
+description: |
+  Detects file artefacts of Payload ransomware on Windows:
+  - C:\payload.log, an activity log written by the "--background" process (confirmed in VirusTotal sandbox)
+  - ransom notes RECOVER_payload.txt / RECOVERY-xx0001.txt (per Nopal Cyber advisory)
+references:
+  - https://www.nopalcyber.com/threat-hunting-advisory/may-28th,-2026
+  - https://www.virustotal.com/gui/file/1ca67af90400ee6cbbd42175293274a0f5dc05315096cb2e214e4bfe12ffb71f/behavior
+author: Olasunkanmi Ogidan
+date: 2026-11-22
+tags:
+  - attack.impact
+  - attack.t1486
+logsource:
+  product: windows
+  category: file_event   # Sysmon Event ID 11 / Defender DeviceFileEvents
+detection:
+  selection_log:
+    TargetFilename: 'C:\payload.log'
+  selection_note:
+    TargetFilename|endswith:
+      - '\RECOVER_payload.txt'
+      - '\RECOVERY-xx0001.txt'
+  condition: 1 of selection_*
+falsepositives:
+  - None expected
+level: critical
+---
+title: Payload Ransomware - Files Renamed with .payload Extension
+id: a94db554-c068-4f0f-80a3-f42400c272bd
+status: experimental
+description: Detects files written or renamed with the ".payload" extension appended by Payload ransomware during encryption.
+references:
+  - https://www.nopalcyber.com/threat-hunting-advisory/may-28th,-2026
+author: Olasunkanmi Ogidan
+date: 2026-11-22
+tags:
+  - attack.impact
+  - attack.t1486
+logsource:
+  product: windows
+  category: file_event
+detection:
+  selection:
+    TargetFilename|endswith: '.payload'
+  condition: selection
+falsepositives:
+  - Legitimate files named *.payload (e.g. some software update packages) - check volume and process
+level: high

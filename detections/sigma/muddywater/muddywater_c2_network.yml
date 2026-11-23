@@ -1,0 +1,92 @@
+title: MuddyWater Olalampo - DNS Query to Known C2 Domain
+id: 1eddb10d-eafd-430c-9cb0-9330f3fb3c88
+status: experimental
+description: |
+  DNS lookups for validated Operation Olalampo C2 domains. codefusiontech[.]org and promoverse[.]org were active as of Nov 2026;
+  miniquest[.]org (suspended Feb 2026) and jerusalemsolutions[.]com (expired/parked Oct 2026) are kept for retro-hunting.
+references:
+  - https://group-ib.com/blog/muddywater-operation-olalampo
+author: Olasunkanmi Ogidan
+date: 2026-11-22
+tags:
+  - attack.command-and-control
+  - attack.t1071.001
+logsource:
+  product: windows
+  category: dns_query   # Sysmon EID 22 / Defender DeviceEvents DnsQueryResponse
+detection:
+  selection:
+    QueryName|endswith:
+      - 'codefusiontech.org'
+      - 'promoverse.org'
+      - 'miniquest.org'
+      - 'jerusalemsolutions.com'
+  condition: selection
+falsepositives:
+  - None expected
+level: critical
+---
+title: MuddyWater Olalampo - C2 URL Paths in Proxy Logs
+id: 01ce12f7-7256-41df-87dd-b5c1a076447d
+status: experimental
+description: |
+  C2 URI paths observed in VirusTotal relations for validated samples: GhostFetch (/api/debut, /api/authentification/connexion,
+  /api/accueil/etat on promoverse) and HTTP_VIP (/postinfo, /content?id= on codefusiontech). Requires proxy logs with TLS inspection.
+  Paths are only matched together with the C2 host to avoid false positives on generic words.
+references:
+  - https://www.virustotal.com/gui/file/8d2227f2c53d7e22a57e12c45cecdd43dbec08dbc3ab93e74e6df52cdf80548b/relations
+  - https://www.virustotal.com/gui/file/1b9e6fe4b03285b2e768c57e320d84323ac9167598395918d56a12e568b0009a/relations
+author: Olasunkanmi Ogidan
+date: 2026-11-22
+tags:
+  - attack.command-and-control
+  - attack.t1071.001
+logsource:
+  category: proxy
+detection:
+  selection_host:
+    cs-host|endswith:
+      - 'promoverse.org'
+      - 'codefusiontech.org'
+  selection_path:
+    c-uri|contains:
+      - '/api/debut'
+      - '/api/authentification/connexion'
+      - '/api/accueil/etat'
+      - '/postinfo'
+      - '/content?id='
+      - '/FMAPP.dll'
+  condition: all of selection_*
+falsepositives:
+  - None expected
+level: critical
+---
+title: Telegram Bot API Accessed by Non-Browser Process (CHAR Backdoor Pattern)
+id: 587eb1b0-0a01-4f4f-b0b8-c3426040da78
+status: experimental
+description: |
+  MuddyWater's CHAR backdoor (Rust) uses a Telegram bot as C2. A non-browser, non-Telegram process resolving api.telegram.org
+  is a strong hunting signal in a corporate environment.
+references:
+  - https://group-ib.com/blog/muddywater-operation-olalampo
+author: Olasunkanmi Ogidan
+date: 2026-11-22
+tags:
+  - attack.command-and-control
+  - attack.t1102.002
+logsource:
+  product: windows
+  category: dns_query
+detection:
+  selection:
+    QueryName: 'api.telegram.org'
+  filter_browsers:
+    Image|endswith:
+      - '\chrome.exe'
+      - '\msedge.exe'
+      - '\firefox.exe'
+      - '\Telegram.exe'
+  condition: selection and not filter_browsers
+falsepositives:
+  - Approved automation/bots using Telegram (should be rare in a professional services firm)
+level: high

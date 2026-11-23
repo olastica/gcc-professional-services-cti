@@ -1,0 +1,44 @@
+// =====================================================================
+// The Gentlemen ransomware - KQL for Microsoft Defender XDR Advanced Hunting
+// (also runs in Sentinel if the Defender XDR connector streams Device* tables)
+// Source Sigma rules: detections/sigma/gentlemen_*.yml
+// Status: experimental - converted/written 22 Nov 2026, NOT tested in a live tenant
+// =====================================================================
+
+// [GT-1] EDR killer - vulnerable Safetica / Lenovo driver loaded (HAND-WRITTEN: no auto mapping)
+//    MITRE T1685 (Disable or Modify Tools, ATT&CK v19), T1068 | Ref: Acronis TRU (Oct 2026)
+DeviceEvents
+| where ActionType == "DriverLoad"
+| where FileName matches regex @"(?i)STProcessMonitor|PhantomKiller|BootRepair|ProcessMonitorDriver"
+    or SHA256 in~ ("a974a9f097bc2e26f285560f1454c70710c88c30c0ae1edfa2977ad862c56716",
+                   "dfdc8313921c0f594ee1cd41ff7ef73d973c667438c2dfe5c38cafdbba10defb")
+| project Timestamp, DeviceName, FileName, FolderPath, SHA256, InitiatingProcessFileName, InitiatingProcessCommandLine
+
+// [GT-2] PowerShell "The Gentlemen" console banner (auto-converted)
+//    MITRE T1059.001 | hunting-grade
+DeviceProcessEvents
+| where FileName in~ ("powershell.exe", "pwsh.exe")
+    and (ProcessCommandLine contains "Write-Host" and ProcessCommandLine contains "The Gentlemen")
+
+// [GT-3] AnyDesk / WinSCP execution (auto-converted) - replace or remove the allowlist line
+//    MITRE T1219, T1048
+DeviceProcessEvents
+| where ((FolderPath endswith "\\AnyDesk.exe" or ProcessVersionInfoFileDescription =~ "AnyDesk" or ProcessVersionInfoProductName =~ "AnyDesk")
+    or ((FolderPath endswith "\\WinSCP.exe" or FolderPath endswith "\\WinSCP.com") or ProcessVersionInfoProductName =~ "WinSCP"))
+    and (not(AccountName contains "<APPROVED_IT_ACCOUNT>"))
+
+// [GT-4a] gentlemen_system scheduled task - command line (auto-converted)
+//     MITRE T1053.005
+DeviceProcessEvents
+| where ProcessCommandLine contains "gentlemen_system"
+
+// [GT-4b] gentlemen_system scheduled task - created via any method (HAND-WRITTEN; replaces Event 4698 rule)
+DeviceEvents
+| where ActionType == "ScheduledTaskCreated"
+| where AdditionalFields has "gentlemen_system"
+| project Timestamp, DeviceName, AdditionalFields, InitiatingProcessFileName, InitiatingProcessCommandLine
+
+// [GT-4c] Sentinel-only alternative if Windows Security Events (4698) are collected
+// SecurityEvent
+// | where EventID == 4698
+// | where EventData has "gentlemen_system"

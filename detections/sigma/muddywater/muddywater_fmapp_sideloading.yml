@@ -1,0 +1,61 @@
+title: MuddyWater - FMAPP.dll Sideloaded by FMAPP.exe Outside Legitimate Path
+id: 65d75357-ef2e-4fea-bf2f-a1778916be16
+status: experimental
+description: |
+  Operation Olalampo: the legitimate Fortemedia binary FMAPP.exe is used to sideload a malicious FMAPP.dll
+  (SHA-256 3fa148e2d3fb86cecc15c276c5329496beba9aba14a6024b561efabf2e4e68af), which connects to C2 162.0.230[.]185.
+  Legitimate Fortemedia components live under Program Files or the Windows DriverStore; a load from anywhere else is suspicious.
+references:
+  - https://group-ib.com/blog/muddywater-operation-olalampo
+  - https://www.security.com/threat-intelligence/iran-seedworm-electronics
+author: Olasunkanmi Ogidan
+date: 2026-11-22
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1574.001
+logsource:
+  product: windows
+  category: image_load   # Sysmon EID 7 / Defender DeviceImageLoadEvents
+detection:
+  selection:
+    Image|endswith: '\FMAPP.exe'
+    ImageLoaded|endswith: '\FMAPP.dll'
+  filter_legit:
+    ImageLoaded|startswith:
+      - 'C:\Program Files\'
+      - 'C:\Program Files (x86)\'
+      - 'C:\Windows\System32\DriverStore\'
+  condition: selection and not filter_legit
+falsepositives:
+  - Non-standard Fortemedia installs (verify path and signer)
+level: high
+---
+title: MuddyWater - FMAPP.exe Executed From User-Writable Location
+id: be390fef-9b6c-460d-bb35-ba6dc8c3ed10
+status: experimental
+description: |
+  FMAPP.exe running from a user-writable folder (Users, ProgramData, Temp) indicates it was copied there to sideload
+  a malicious FMAPP.dll. Group-IB observed operators launching FMAPP.exe via encoded PowerShell sent over Telegram.
+references:
+  - https://group-ib.com/blog/muddywater-operation-olalampo
+author: Olasunkanmi Ogidan
+date: 2026-11-22
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1574.001
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    Image|endswith: '\FMAPP.exe'
+    Image|contains:
+      - '\Users\'
+      - '\ProgramData\'
+      - '\Temp\'
+  condition: selection
+falsepositives:
+  - Unlikely
+level: high

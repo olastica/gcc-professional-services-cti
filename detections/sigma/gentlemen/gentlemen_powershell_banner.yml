@@ -1,0 +1,29 @@
+title: The Gentlemen Ransomware - PowerShell Console Banner
+id: 07a78679-b246-404d-9c67-8a4444aa5faa
+status: experimental
+description: |
+  Detects the console banner printed by The Gentlemen ransomware via PowerShell Write-Host.
+  Observed in VirusTotal sandbox runs of 1334f0189a8e6dbc48456fa4b482c5726ab7609f7fa652fcc4c1a96f2334436f.
+  Hunting-grade: affiliates can change the text.
+references:
+  - https://www.virustotal.com/gui/file/1334f0189a8e6dbc48456fa4b482c5726ab7609f7fa652fcc4c1a96f2334436f/behavior
+author: Olasunkanmi Ogidan
+date: 2026-11-21
+tags:
+  - attack.execution
+  - attack.t1059.001
+logsource:
+  product: windows
+  category: process_creation   # Sysmon Event ID 1 / Security 4688 with command line
+detection:
+  selection:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+    CommandLine|contains|all:
+      - 'Write-Host'
+      - 'The Gentlemen'
+  condition: selection
+falsepositives:
+  - Unlikely
+level: high

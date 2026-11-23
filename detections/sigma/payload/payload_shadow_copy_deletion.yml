@@ -1,0 +1,62 @@
+title: Payload Ransomware - Shadow Copy Deletion Spawned by "--background" Relaunch
+id: c0f2e1db-6ab2-4e66-b420-fb8e082e0f81
+status: experimental
+description: |
+  Payload ransomware relaunches itself with a "--background" argument, then runs
+  "cmd.exe /c vssadmin.exe delete shadows /all /quiet" before encryption.
+  This rule requires the cmd.exe parent command line to end with "--background", which makes it
+  far more specific than generic shadow-copy deletion rules.
+  Based on VirusTotal sandbox process tree of 1ca67af90400ee6cbbd42175293274a0f5dc05315096cb2e214e4bfe12ffb71f
+  (parent-child link inferred from sandbox output).
+references:
+  - https://www.nopalcyber.com/threat-hunting-advisory/may-28th,-2026
+  - https://www.derp.ca/research/payload-ransomware-babuk-derivative/
+  - https://www.virustotal.com/gui/file/1ca67af90400ee6cbbd42175293274a0f5dc05315096cb2e214e4bfe12ffb71f/behavior
+author: Olasunkanmi Ogidan
+date: 2026-11-22
+tags:
+  - attack.impact
+  - attack.t1490
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection_cmd:
+    Image|endswith: '\cmd.exe'
+    CommandLine|contains|all:
+      - 'vssadmin'
+      - 'delete shadows'
+  selection_parent:
+    ParentCommandLine|endswith: '--background'
+  condition: all of selection_*
+falsepositives:
+  - None expected
+level: critical
+---
+title: Shadow Copy Deletion via vssadmin (Payload and Other Ransomware)
+id: b4214064-d443-4aad-a8fc-d919df3cbb43
+status: experimental
+description: |
+  Generic catch for "vssadmin delete shadows /all /quiet", used by Payload and many other ransomware families
+  to stop victims restoring from Volume Shadow Copies. Broader than the "--background" rule.
+references:
+  - https://www.nopalcyber.com/threat-hunting-advisory/may-28th,-2026
+author: Olasunkanmi Ogidan
+date: 2026-11-22
+tags:
+  - attack.impact
+  - attack.t1490
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    CommandLine|contains|all:
+      - 'vssadmin'
+      - 'delete'
+      - 'shadows'
+      - '/all'
+  condition: selection
+falsepositives:
+  - Rare backup/admin maintenance scripts (verify with IT)
+level: high
